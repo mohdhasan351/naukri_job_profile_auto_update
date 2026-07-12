@@ -1,9 +1,19 @@
 import { launchBroswer } from "../playwright/browser.js";
-import { login } from "../playwright/login.js";
+import { ensureLoggedIn } from "../playwright/login.js";
+import { getProfileLastUpdated, openProfile, updatePersonalDetails } from "../playwright/profile.js";
+import { createContext } from "../playwright/session.js";
 const browser = await launchBroswer();
-const context = await browser.newContext()
+const context = await createContext(browser)
 const page = await context.newPage();
-await login(page);
-await context.storageState({path:'state.json'})
-await page.waitForTimeout(10*1000)
-await browser.close()
+await page.goto(process.env.URL);
+await ensureLoggedIn(page, context);
+await openProfile(page);
+const lastUpdate = await getProfileLastUpdated(page);
+if (lastUpdate && 'today' !== lastUpdate) {
+    await updatePersonalDetails(page);
+    console.log(lastUpdate)
+    await browser.close()
+} else {
+    await browser.close()
+}
+//await page.waitForTimeout(10 * 1000)
