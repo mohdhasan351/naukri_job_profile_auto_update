@@ -57,11 +57,12 @@ On first run it logs in and saves your session to `state.json` so later runs ski
 
 ### Windows — Task Scheduler
 
-Run once in PowerShell (adjust paths if yours differ):
+A ready-made [`run-updater.bat`](run-updater.bat) is included — it `cd`s to the project folder, runs the script, and appends output to `logs\loginTest.log`. Double-click it to test manually.
+
+Register it to run daily at 9 AM (run once in PowerShell, adjust the path if yours differs):
 
 ```powershell
-mkdir "C:\Users\Hasan\Desktop\naukri-profile-updater\logs" -Force
-schtasks /create /tn "NaukriProfileUpdater" /tr "cmd /c cd /d \"C:\Users\Hasan\Desktop\naukri-profile-updater\" && \"C:\Program Files\nodejs\node.exe\" scripts\loginTest.js >> logs\loginTest.log 2>&1" /sc daily /st 09:00 /f
+schtasks /create /tn "NaukriProfileUpdater" /tr "C:\Users\Hasan\Desktop\naukri-profile-updater\run-updater.bat" /sc daily /st 09:00 /f
 ```
 
 - Run it now to test: `schtasks /run /tn "NaukriProfileUpdater"`
@@ -79,6 +80,7 @@ schtasks /create /tn "NaukriProfileUpdater" /tr "cmd /c cd /d \"C:\Users\Hasan\D
 ## Project structure
 
 ```
+run-updater.bat          Windows launcher used by Task Scheduler
 scripts/loginTest.js     Entry point — orchestrates the daily run
 playwright/browser.js    Launches Chromium
 playwright/session.js    Loads/saves the login session (state.json)
